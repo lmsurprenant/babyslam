@@ -83,11 +83,7 @@ class Babyslam(object):
         now = time.time() * 1000 # time in millis
         if (now - self.last_hit) > shared.RATE_LIMIT:
             self.last_hit = now
-            
-            #replace non-alphanumerics with a random alphanumeric
-            char = chr(event.key) if event.key in range(256) and chr(event.key) in self.symbols else random.choice(self.symbols)
-
-            self.fifo.append(self.config.get_random_effect(char))
+            self.fifo.append(self.config.get_random_effect(event.key))
 
     def draw_screen(self):
         # Draw the game world on the window.

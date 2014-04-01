@@ -1,6 +1,5 @@
 import pygame, random, sys, os, re, time, getopt, math
 from pygame.locals import *
-
 import shared, text
 
 
@@ -132,21 +131,22 @@ class FlipEffectInstance(BaseEffectInstance):
           self.image = pygame.transform.rotozoom(self.front, self.base_angle, zoom)
 
 class LetterEffect(BaseEffect):
-    def __init__(self):
+    def __init__(self, basedir):
         super(LetterEffect, self).__init__() 
+	self.basedir = basedir
 
     def create_instance(self, char):
-        return LetterEffectInstance(10, char)
+        sound = pygame.mixer.Sound(os.path.join(self.basedir, char + ".wav"))
+	return LetterEffectInstance(10, char, sound)
 
 class LetterEffectInstance(BaseEffectInstance):
-    def __init__(self, steps, char):
-        super(LetterEffectInstance, self).__init__(steps) 
+    def __init__(self, steps, char, sound):
+        super(LetterEffectInstance, self).__init__(steps, sound) 
 
         self.char = char
         self.base_size = random.randint(100, 200)
         # FIXME: improve formula to determine max 'left' value
         self.color = random.choice(shared.NICECOLORS)
-
         base_surface = text.createText(self.char, shared.font_cache[int(self.base_size)])
         base_rect = base_surface.get_rect()
 
@@ -164,7 +164,7 @@ class LetterEffectInstance(BaseEffectInstance):
         shared.windowSurface.blit(outline, (x-1,y+1))
         shared.windowSurface.blit(outline, (x+1,y-1))
         shared.windowSurface.blit(outline, (x+1,y+1))
-        shared.windowSurface.blit(mytext, (x,y))
+        shared.windowSurface.blit(mytext, (x,y)) 
 
     def do_update(self):
         t2 = 1.25 - 0.25 * (2*(self.t - 0.5)) # 0...1...0 parabolic

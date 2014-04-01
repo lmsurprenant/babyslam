@@ -1,3 +1,8 @@
+== WHY FORK
+This is a simple fork of the original babyslam code to make the app a bit more educational. It includes two minor differences:
+ - If baby presses a number or letter, speak the character name
+ - If baby presses a non-alphanumeric, display a random non-letter effect
+
 == INTRODUCTION
 
 This program is intended to let baby's slam away on the computer's keyboard
@@ -10,7 +15,7 @@ I am not responsible for any damage this program or your baby delivers to your c
 
 == INSTALLATION
 
-git clone git://github.com/karel1980/babyslam.git
+git clone git://github.com/lmsurprenant/babyslam.git
 cd babyslam
 sudo python setup.py install
 

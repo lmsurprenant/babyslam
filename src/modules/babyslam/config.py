@@ -25,7 +25,6 @@ class XmlConfigBuilder(object):
 
     if global_el != None:
       basedir = self.readStringValue(global_el, 'basedir', '/usr/share/babyslam/media') #FIXME: hardcoded path
-
       escapeclause = self.readStringValue(global_el, 'escapeclause', None)
       if escapeclause != None:
         cfg.escapeclause = escapeclause
@@ -57,7 +56,7 @@ class XmlConfigBuilder(object):
 
           #TODO: handle missing images, sounds, ... more graceously
           if type == 'letter':
-            cfg.add_effect(weight, self.build_letter_effect(basedir, item_el, effect_el))
+            cfg.letter_effect = self.build_letter_effect(basedir, item_el, effect_el)
           elif type == 'rotate':
             cfg.add_effect(weight, self.build_rotate_effect(basedir, item_el, effect_el))
           elif type == 'flip':
@@ -81,7 +80,7 @@ class XmlConfigBuilder(object):
     return images, sound
 
   def build_letter_effect(self, basedir, item_el, effect_el):
-    return effects.LetterEffect()
+    return effects.LetterEffect(basedir)
 
   def build_rotate_effect(self, basedir, item_el, effect_el):
     images, sound = self.get_base_data(basedir, item_el)
@@ -111,13 +110,20 @@ class Config:
     self.effects = []
     self.cumul = 0
     self.escapeclause = 'babydodo'
-
+    self.symbols = 'abcdefghijklmnopqrstuvwxyz1234567890'
+    
   def add_effect(self, weight, effect):
     self.cumul += weight
     self.effects.append([self.cumul, effect])
-
-  def get_random_effect(self, char):
+  
+  def get_random_effect(self, keypress):
     max = self.effects[-1][0]
     r = random.random()*max
-    # find the first element whose cumul > r
-    return filter(lambda x: x[0]>r, self.effects)[0][1].create_instance(char)
+    if keypress in range(256) and chr(keypress) in self.symbols:
+        char = chr(keypress)
+	return self.letter_effect.create_instance(char)
+    else:
+        char = random.choice(self.symbols)
+        # find the first element whose cumul > r
+        return filter(lambda x: x[0]>r, self.effects)[0][1].create_instance(char)
+
